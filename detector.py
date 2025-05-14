@@ -6,9 +6,12 @@ from zona_de_perigo import ZonaDePerigo
 model = YOLO('yolov8s.pt')
 
 # Inicializa a zona de perigo
-raio_mm = (1600*0.364) + 200
+raio_mm = (1600*0.364) + 200 # Fomula distancia 
 print (raio_mm)
-zona_de_perigo = ZonaDePerigo(int(raio_mm), mm_por_px=0.1789, resolucao_x=640, resolucao_y=480, distancia_camera_mm=2820)
+
+mm_px = 25.4/142          # 25,4 mm (polegada)/(ppi da tela) 142
+
+zona_de_perigo = ZonaDePerigo(int(raio_mm), mm_px, resolucao_x=640, resolucao_y=480, distancia_camera_mm=2820)
 
 # Função para listar as câmeras disponíveis
 def listar_cameras_disponiveis(max_cameras=10):
@@ -58,7 +61,7 @@ while True:
         break
 
     # Fazendo a detecção no frame capturado
-    results = model(frame)
+    results = model(frame, conf=0.5)  # Apenas detecções com confiança >= 0.5
 
     # Extraindo as caixas delimitadoras das detecções
     boxes = results[0].boxes
